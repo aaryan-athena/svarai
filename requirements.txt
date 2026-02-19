@@ -1,0 +1,12 @@
+# Svarai – Raga Accuracy Pipeline
+# Install with:  pip install -r requirements.txt
+
+librosa>=0.10.0
+numpy>=1.24.0
+scipy>=1.10.0
+scikit-learn>=1.3.0
+pandas>=2.0.0
+joblib>=1.3.0
+
+# Optional: speeds up librosa's audio decoding
+soundfile>=0.12.0
