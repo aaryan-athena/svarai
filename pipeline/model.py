@@ -63,7 +63,6 @@ def train(
         base_svm, X_scaled, y,
         cv=cv,
         scoring=["accuracy", "f1_macro"],
-        fit_params={"sample_weight": weights},
         return_train_score=True,
         verbose=0,
     )
