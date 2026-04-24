@@ -1,147 +1,237 @@
-# Svarai – Raga Accuracy Pipeline
+# SvarAI — AI Raga Tutor & Pitch-Accuracy Coach
 
-A machine learning pipeline that evaluates how accurately a user sang a given Indian classical raga. The model is trained on reference recordings and scores new performances based on pitch, amplitude, and melodic structure — without requiring a perfect match, since every singer has their own style.
+A web-based platform for Indian classical music practice. Upload or record a performance and SvarAI identifies the raga using parameter-based acoustic analysis, then delivers real-time coaching feedback from an AI guru powered by Gemini 2.5 Flash Lite.
 
-## Ragas Supported
+**No ML model training required.** Raga profiles are stored in Firebase and matched against your audio using hand-crafted acoustic scoring — meaning the system works immediately with any raga profile you add through the admin panel.
 
-| Raga | Files |
-|---|---|
-| Asavari | 10 WAV |
-| Sarang | 10 WAV |
-| Yaman | 10 WAV |
+---
+
+## Features
+
+- **Parameter-based raga identification** — scores audio against chroma profile, pitch parameters, note prominence, and forbidden-note penalties
+- **AI tutor feedback** — Gemini 2.5 Flash Lite acts as a guru, giving per-deviation suggestions, practice tips, and raga context
+- **Firebase-backed raga profiles** — full CRUD from an admin panel; add or tune any raga without touching code
+- **Live recording** — record directly in the browser with real-time waveform visualisation
+- **Pitch coaching** — oscillation depth, gamaka rate, pitch continuity, and drift shown alongside expected ranges
+
+---
 
 ## Project Structure
 
 ```
 svarai/
-├── dataset/
-│   ├── param.csv             # metadata: raga labels, quality, usability scores
-│   └── audio_files/          # reference WAV recordings
 ├── pipeline/
-│   ├── config.py             # all tuneable settings (paths, feature params)
-│   ├── feature_extractor.py  # audio → 79-dim feature vector
-│   ├── data_loader.py        # reads param.csv, drives extraction
-│   ├── model.py              # SVM training & persistence
-│   └── evaluator.py          # scores a user recording
-├── models/                   # saved artefacts (created after training)
-├── train.py                  # entry point: train the model
-├── evaluate.py               # entry point: score a recording
+│   ├── config.py             # audio & feature-extraction constants
+│   ├── rich_features.py      # audio → labeled feature dict (pitch, chroma, spectral)
+│   └── raga_matcher.py       # parameter-based scoring engine (no ML)
+├── ai/
+│   └── tutor.py              # Gemini 2.5 Flash Lite coaching, with retry backoff
+├── api/
+│   └── main.py               # FastAPI backend — analyze + raga CRUD endpoints
+├── db/
+│   └── firebase.py           # Firestore client (get / create / update / delete ragas)
+├── frontend/
+│   ├── index.html            # Practice page
+│   ├── admin.html            # Admin panel
+│   └── static/
+│       ├── css/style.css
+│       └── js/
+│           ├── app.js
+│           └── admin.js
+├── seed_firebase.py          # One-shot script to seed default raga profiles
+├── run.py                    # Uvicorn launcher
 └── requirements.txt
 ```
 
+---
+
 ## Setup
 
+### Prerequisites
+
+- Python 3.10+
+- A Firebase project with Firestore enabled
+- A Google Gemini API key (free tier works with Gemini 2.5 Flash Lite)
+
+### 1. Install dependencies
+
 ```bash
-# Python 3.10+ recommended
 pip install -r requirements.txt
 ```
 
-## Usage
+### 2. Configure environment
 
-### 1. Train
+Copy `.env.example` to `.env` and fill in your keys:
+
+```env
+# Firebase — either paste the JSON content or point to the file
+FIREBASE_CREDENTIALS={"type":"service_account", ...}
+# or
+FIREBASE_CREDENTIALS_PATH=path/to/serviceAccountKey.json
+
+# Gemini API
+GEMINI_API_KEY=AIza...
+
+# Optional: override the default admin key (default: svarai-admin)
+SVARAI_ADMIN_KEY=your-secret-key
+```
+
+### 3. Seed default raga profiles
 
 ```bash
-python train.py
+python seed_firebase.py
 ```
 
-Reads all files from `dataset/param.csv`, extracts features, runs 5-fold cross-validation, and saves the trained model to `models/`.
+This creates Yaman, Asavari, and Sarang in Firestore. Existing ragas are left untouched. You can add more ragas (or edit these) from the admin panel at `/admin`.
 
-Optional flag:
+### 4. Start the server
 
 ```bash
-python train.py --quiet   # suppress per-file extraction messages
+python run.py
 ```
 
-### 2. Evaluate a recording
+Open `http://127.0.0.1:8000` in a browser.
+
+Optional flags:
 
 ```bash
-python evaluate.py <path_to_audio> <raga_name>
+python run.py --host 0.0.0.0 --port 8080 --reload
 ```
 
-Examples:
+---
 
-```bash
-python evaluate.py my_recording.wav Yaman
-python evaluate.py recordings/test.wav Asavari
-python evaluate.py demo.wav sarang       # case-insensitive
+## How Raga Identification Works
+
+No trained model. Each raga profile stored in Firebase defines:
+
+| Field | Purpose |
+|---|---|
+| `chroma_profile` | Expected prominence (0–1) of each of the 12 pitch classes |
+| `pitch_params` | Expected min/max ranges for acoustic parameters |
+| `vadi` / `samvadi` | Dominant and second-dominant swaras |
+| `forbidden_notes` | Notes that must not appear |
+
+For each uploaded recording, four sub-scores are computed and combined:
+
+```
+Overall = 0.45 × chroma_score
+        + 0.30 × pitch_params_score
+        + 0.25 × note_prominence_score
+        − forbidden_penalty   (up to 20 pts)
 ```
 
-### Example output
+| Component | How it works |
+|---|---|
+| **Chroma score** (45%) | Cosine similarity between the audio's 12-bin chroma vector and the raga's profile; all 12 tonic shifts are tried so recordings in any key work |
+| **Pitch params score** (30%) | Fraction of acoustic parameters (mean pitch, pitch std, gamaka depth, ornament rate, continuity, drift, spectral centroid) that fall within the raga's expected ranges; partial credit for near-misses |
+| **Note prominence** (25%) | Are the vadi and samvadi among the most energetic pitch classes? |
+| **Forbidden penalty** (−0 to 20 pts) | Energy present in forbidden-note positions is penalised |
 
-```
-============================================================
-  Result          : ✓ CORRECT
-  Target raga     : Yaman
-  Predicted raga  : Yaman
-  Overall score   : 78.4 / 100
-------------------------------------------------------------
-  SVM confidence  : 84.2 %
-  DTW similarity  : 70.5 %
-------------------------------------------------------------
-  Per-raga probabilities:
-    Yaman        84.2%  █████████████████████████
-    Asavari       9.1%  ██
-    Sarang        6.7%  ██
-============================================================
+The raga with the highest overall score is the best match.
 
-Feedback:
-  Good performance. The core melodic phrases are recognisable,
-  with minor deviations.
-  Score breakdown — SVM confidence: 84.2%  |  DTW similarity: 70.5%
-```
+---
 
-## How It Works
+## AI Tutor
 
-### Feature Extraction
+After identification, the top match (or the raga you specified) is passed to Gemini 2.5 Flash Lite along with:
 
-Each audio file is sliced into overlapping 30-second segments. A 79-dimensional feature vector is computed per segment and then averaged across all segments, so files of any length map to the same fixed representation.
+- The full raga reference (aroha, avaroha, vadi, samvadi, pakad, gamaka notes, tips)
+- The extracted acoustic features
+- Per-parameter deviation details from the matcher
 
-| Feature | Dims | Purpose |
+Gemini returns structured JSON with:
+
+- **Overall assessment** — 2–3 sentence summary
+- **Score** — 0–100
+- **Deviations** — per-parameter issues with concrete fix suggestions and severity (high / medium / low)
+- **Positive aspects** — what you did well
+- **Practice tips** — specific exercises
+- **Raga context** — what makes this raga distinctive
+
+The tutor uses automatic retry with exponential backoff (up to 4 attempts) to handle transient 503/429 errors from the API.
+
+---
+
+## Admin Panel
+
+Navigate to `/admin` and log in with your admin key.
+
+From here you can:
+
+- **Add / Edit / Delete** raga profiles
+- Set the chroma profile (12 pitch-class weights)
+- Define pitch parameter ranges (min/max for any acoustic feature)
+- **Seed defaults** to restore Yaman, Asavari, and Sarang
+
+All changes take effect immediately — no server restart needed.
+
+---
+
+## API Endpoints
+
+### Public
+
+| Method | Path | Description |
 |---|---|---|
-| MFCC (mean + std) | 40 | Timbral / vowel colour |
-| Chroma (mean + std) | 24 | Pitch-class energy — core of raga identity |
-| Spectral centroid / bandwidth / rolloff | 6 | Brightness, spectral shape |
-| Zero-crossing rate (mean + std) | 2 | Roughness |
-| RMS energy (mean + std) | 2 | Amplitude dynamics |
-| Fundamental pitch F0 (mean + std) | 2 | Melodic contour |
-| Pitch std | 1 | Pitch continuity proxy |
+| `POST` | `/api/analyze` | Upload audio, get ranked matches + AI feedback |
+| `GET` | `/api/ragas` | List all raga profiles (lightweight) |
+| `GET` | `/api/ragas/{id}` | Get full raga profile |
 
-### Model
+`POST /api/analyze` accepts `multipart/form-data`:
 
-- **SVM with RBF kernel** + isotonic calibration → per-class probability estimates
-- `class_weight="balanced"` handles minor class imbalance automatically
-- Training samples are weighted by the `Usability` score from `param.csv`
-- 5-fold stratified cross-validation is run and reported at training time
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `file` | audio file | ✓ | WAV, MP3, OGG, FLAC, or M4A |
+| `target_raga` | string | — | Raga you intended to sing (for focused AI feedback) |
+| `include_ai_feedback` | bool | — | Default `true`; set `false` to skip Gemini call |
 
-### Scoring
+### Admin (requires `x-admin-key` header)
 
-```
-Score = 0.55 × SVM_P(target_raga) + 0.45 × DTW_similarity_to_prototype
-```
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/api/admin/login` | Verify admin key |
+| `PUT` | `/api/admin/change-key` | Update admin key |
+| `GET` | `/api/admin/ragas` | List all ragas (full) |
+| `POST` | `/api/admin/ragas` | Create a raga |
+| `PUT` | `/api/admin/ragas/{id}` | Update a raga |
+| `DELETE` | `/api/admin/ragas/{id}` | Delete a raga |
+| `POST` | `/api/admin/seed` | Seed default ragas |
 
-- **SVM component** — how confidently the model identifies the correct raga
-- **DTW component** — how close the feature vector is to the raga's average profile (centroid across all training samples)
-
-This combination tolerates individual variability: the user is never compared to a single reference recording, only to the statistical average of the raga.
+---
 
 ## Configuration
 
-All tuneable parameters live in `pipeline/config.py`:
+`pipeline/config.py` holds audio and feature-extraction constants:
 
 | Parameter | Default | Description |
 |---|---|---|
-| `MIN_USABILITY` | `2.0` | Skip files below this usability score |
+| `SAMPLE_RATE` | `22050` | Hz — audio resampling target |
 | `SEGMENT_SEC` | `30` | Analysis window length in seconds |
 | `SEGMENT_HOP_SEC` | `15` | Step between windows (50% overlap) |
-| `N_MFCC` | `20` | Number of MFCC coefficients |
-| `N_CHROMA` | `12` | Chroma bins |
-| `SCORE_WEIGHT_SVM` | `0.55` | Weight of SVM confidence in final score |
-| `SCORE_WEIGHT_DTW` | `0.45` | Weight of DTW similarity in final score |
+| `N_MFCC` | `20` | MFCC coefficients extracted |
+| `N_CHROMA` | `12` | Chroma bins (one per semitone) |
+| `PITCH_FMIN` | `60.0` | Hz — lower pitch bound for pyin |
+| `PITCH_FMAX` | `1000.0` | Hz — upper pitch bound for pyin |
+
+Scoring weights and the forbidden-note penalty ceiling live in `pipeline/raga_matcher.py`:
+
+```python
+_W_CHROMA = 0.45
+_W_PITCH  = 0.30
+_W_PROM   = 0.25
+_MAX_FORB_PENALTY = 20.0
+```
+
+---
 
 ## Requirements
 
 - Python 3.10+
-- librosa, numpy, scipy, scikit-learn, pandas, joblib, soundfile
+- librosa, numpy, scipy, soundfile
+- fastapi, uvicorn, python-multipart, aiofiles
+- firebase-admin
+- google-genai
+- python-dotenv
 
 Install all with:
 

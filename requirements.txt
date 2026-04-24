@@ -1,12 +1,23 @@
-# Svarai – Raga Accuracy Pipeline
-# Install with:  pip install -r requirements.txt
+# SvarAI — Raga Tutor & Pitch Coach
+# Install: pip install -r requirements.txt
 
+# ── Audio processing ────────────────────────────────────────────────────────
 librosa>=0.10.0
 numpy>=1.24.0
 scipy>=1.10.0
-scikit-learn>=1.3.0
-pandas>=2.0.0
-joblib>=1.3.0
-
-# Optional: speeds up librosa's audio decoding
 soundfile>=0.12.0
+
+# ── Web API ─────────────────────────────────────────────────────────────────
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+python-multipart>=0.0.9
+aiofiles>=23.2.0
+
+# ── Firebase Firestore ──────────────────────────────────────────────────────
+firebase-admin>=6.5.0
+
+# ── AI Tutor (Gemini API) ───────────────────────────────────────────────────
+google-genai>=1.0.0
+
+# ── Environment config ──────────────────────────────────────────────────────
+python-dotenv>=1.0.0

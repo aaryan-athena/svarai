@@ -1,0 +1,167 @@
+{
+  "Asavari": {
+    "description": "Morning raga (5–8 AM). Komal Ga, Dha, Ni. Serene and devotional character.",
+    "notes": "Komal (flat) Ga, Dha, Ni give it a melancholic-yet-peaceful quality.",
+    "parameters": {
+      "mean_pitch": {
+        "label": "Mean Pitch (Hz)",
+        "min": 120,
+        "max": 320,
+        "unit": "Hz",
+        "description": "Average fundamental frequency of voiced segments"
+      },
+      "oscillation_depth": {
+        "label": "Oscillation Depth (Hz)",
+        "min": 60,
+        "max": 420,
+        "unit": "Hz",
+        "description": "Peak-to-peak range of pitch variations (gamaka span)"
+      },
+      "oscillation_rate": {
+        "label": "Oscillation Rate (Hz)",
+        "min": 0.1,
+        "max": 0.7,
+        "unit": "Hz",
+        "description": "Frequency of pitch oscillations per second"
+      },
+      "pitch_continuity": {
+        "label": "Pitch Continuity",
+        "min": 0.35,
+        "max": 1.0,
+        "unit": "fraction",
+        "description": "Fraction of frames with detected voiced pitch (0–1)"
+      },
+      "pitch_drift": {
+        "label": "Pitch Drift (Hz/s)",
+        "min": 0.0,
+        "max": 8.0,
+        "unit": "Hz/s",
+        "description": "Linear drift of pitch over the recording"
+      },
+      "spectral_centroid": {
+        "label": "Spectral Centroid (Hz)",
+        "min": 700,
+        "max": 2200,
+        "unit": "Hz",
+        "description": "Brightness of the tone; higher → brighter timbre"
+      },
+      "std_pitch": {
+        "label": "Pitch Std Dev (Hz)",
+        "min": 40,
+        "max": 200,
+        "unit": "Hz",
+        "description": "Standard deviation of pitch — measures melodic range"
+      }
+    }
+  },
+  "Yaman": {
+    "description": "Evening raga (6–9 PM). Tivra (sharp) Madhyam. Peaceful and romantic.",
+    "notes": "All shuddha swaras except tivra Ma (F#). Full both octaves, wide range.",
+    "parameters": {
+      "mean_pitch": {
+        "label": "Mean Pitch (Hz)",
+        "min": 180,
+        "max": 480,
+        "unit": "Hz",
+        "description": "Average fundamental frequency of voiced segments"
+      },
+      "oscillation_depth": {
+        "label": "Oscillation Depth (Hz)",
+        "min": 100,
+        "max": 600,
+        "unit": "Hz",
+        "description": "Peak-to-peak range of pitch variations (gamaka span)"
+      },
+      "oscillation_rate": {
+        "label": "Oscillation Rate (Hz)",
+        "min": 0.15,
+        "max": 0.75,
+        "unit": "Hz",
+        "description": "Frequency of pitch oscillations per second"
+      },
+      "pitch_continuity": {
+        "label": "Pitch Continuity",
+        "min": 0.4,
+        "max": 1.0,
+        "unit": "fraction",
+        "description": "Fraction of frames with detected voiced pitch (0–1)"
+      },
+      "pitch_drift": {
+        "label": "Pitch Drift (Hz/s)",
+        "min": 0.0,
+        "max": 10.0,
+        "unit": "Hz/s",
+        "description": "Linear drift of pitch over the recording"
+      },
+      "spectral_centroid": {
+        "label": "Spectral Centroid (Hz)",
+        "min": 900,
+        "max": 2800,
+        "unit": "Hz",
+        "description": "Brightness of the tone; Yaman tends toward brighter timbre"
+      },
+      "std_pitch": {
+        "label": "Pitch Std Dev (Hz)",
+        "min": 60,
+        "max": 260,
+        "unit": "Hz",
+        "description": "Standard deviation of pitch — Yaman covers a wide melodic range"
+      }
+    }
+  },
+  "Sarang": {
+    "description": "Afternoon raga (12–3 PM). Komal Nishad. Joyful and playful character.",
+    "notes": "Vrindavani Sarang: uses both Ma and Pa. Active gamaka on Re.",
+    "parameters": {
+      "mean_pitch": {
+        "label": "Mean Pitch (Hz)",
+        "min": 160,
+        "max": 420,
+        "unit": "Hz",
+        "description": "Average fundamental frequency of voiced segments"
+      },
+      "oscillation_depth": {
+        "label": "Oscillation Depth (Hz)",
+        "min": 80,
+        "max": 550,
+        "unit": "Hz",
+        "description": "Peak-to-peak range of pitch variations (gamaka span)"
+      },
+      "oscillation_rate": {
+        "label": "Oscillation Rate (Hz)",
+        "min": 0.2,
+        "max": 1.0,
+        "unit": "Hz",
+        "description": "Frequency of pitch oscillations — Sarang is ornament-heavy"
+      },
+      "pitch_continuity": {
+        "label": "Pitch Continuity",
+        "min": 0.3,
+        "max": 1.0,
+        "unit": "fraction",
+        "description": "Fraction of frames with detected voiced pitch (0–1)"
+      },
+      "pitch_drift": {
+        "label": "Pitch Drift (Hz/s)",
+        "min": 0.0,
+        "max": 12.0,
+        "unit": "Hz/s",
+        "description": "Linear drift of pitch over the recording"
+      },
+      "spectral_centroid": {
+        "label": "Spectral Centroid (Hz)",
+        "min": 800,
+        "max": 2500,
+        "unit": "Hz",
+        "description": "Brightness of the tone"
+      },
+      "std_pitch": {
+        "label": "Pitch Std Dev (Hz)",
+        "min": 50,
+        "max": 240,
+        "unit": "Hz",
+        "description": "Standard deviation of pitch — measures melodic range"
+      }
+    }
+  }
+}

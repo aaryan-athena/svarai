@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SvarAI &#8212; Admin Panel</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body class="admin-body">
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">&#127925;</span>
+        <span class="logo-text">SvarAI</span>
+        <span class="logo-tagline">Admin Panel</span>
+      </div>
+      <nav class="header-nav">
+        <a href="/" class="nav-link">Practice</a>
+        <a href="/admin" class="nav-link active">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Login overlay -->
+  <div id="loginOverlay" class="login-overlay">
+    <div class="login-box card">
+      <h2 class="card-title">Admin Login</h2>
+      <p>Enter your admin key to manage raga profiles.</p>
+      <div class="field-group">
+        <input type="password" id="loginKeyInput" placeholder="Admin key" class="input-field" />
+      </div>
+      <div id="loginError" class="error-msg hidden"></div>
+      <button class="btn btn-primary btn-full" id="loginBtn">Login</button>
+    </div>
+  </div>
+
+  <!-- Admin content -->
+  <main class="main-container admin-main" id="adminMain" style="display:none">
+
+    <div class="admin-toolbar">
+      <h1 class="admin-page-title">Raga Parameter Management</h1>
+      <div class="toolbar-actions">
+        <button class="btn btn-outline" id="seedBtn">Seed Defaults</button>
+        <button class="btn btn-primary" id="addRagaBtn">+ Add Raga</button>
+        <button class="btn btn-ghost" id="changeKeyBtn">Change Key</button>
+        <button class="btn btn-ghost" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <div id="adminAlert" class="admin-alert hidden"></div>
+
+    <!-- Raga cards grid -->
+    <div id="ragaGrid" class="raga-admin-grid">
+      <div class="loading-spinner-wrap"><div class="spinner"></div><p>Loading ragas...</p></div>
+    </div>
+
+  </main>
+
+  <!-- Add / Edit Raga Modal -->
+  <div id="ragaModal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add New Raga</h3>
+        <button class="modal-close" id="modalCloseBtn">&#10005;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-tabs">
+          <button class="modal-tab active" data-mtab="basic">Basic Info</button>
+          <button class="modal-tab" data-mtab="notes">Notes &amp; Phrases</button>
+          <button class="modal-tab" data-mtab="chroma">Chroma Profile</button>
+          <button class="modal-tab" data-mtab="params">Pitch Parameters</button>
+        </div>
+
+        <!-- Basic Info -->
+        <div id="mtab-basic" class="modal-tab-panel active">
+          <div class="form-grid">
+            <div class="field-group">
+              <label>Raga Name *</label>
+              <input type="text" id="f-name" class="input-field" placeholder="e.g. Yaman" />
+            </div>
+            <div class="field-group">
+              <label>Difficulty</label>
+              <select id="f-difficulty" class="input-field">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </select>
+            </div>
+            <div class="field-group full-width">
+              <label>Description</label>
+              <textarea id="f-description" class="input-field" rows="2" placeholder="Brief description of the raga's character"></textarea>
+            </div>
+            <div class="field-group">
+              <label>Time of Day</label>
+              <input type="text" id="f-time" class="input-field" placeholder="e.g. First quarter of night" />
+            </div>
+            <div class="field-group">
+              <label>Season</label>
+              <input type="text" id="f-season" class="input-field" placeholder="e.g. Rainy season" />
+            </div>
+            <div class="field-group">
+              <label>Vadi (dominant note)</label>
+              <input type="text" id="f-vadi" class="input-field" placeholder="e.g. G" />
+            </div>
+            <div class="field-group">
+              <label>Samvadi (second-dominant)</label>
+              <input type="text" id="f-samvadi" class="input-field" placeholder="e.g. N" />
+            </div>
+            <div class="field-group full-width">
+              <label>Teacher Tips</label>
+              <textarea id="f-tips" class="input-field" rows="2" placeholder="Key things students should focus on"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes & Phrases -->
+        <div id="mtab-notes" class="modal-tab-panel">
+          <p class="helper-text">Use swara notation: S R G m M# P d D n N. Separate items with commas.</p>
+          <div class="form-grid">
+            <div class="field-group full-width">
+              <label>Aroha (ascending scale)</label>
+              <input type="text" id="f-aroha" class="input-field" placeholder="S R G M# D N S'" />
+            </div>
+            <div class="field-group full-width">
+              <label>Avaroha (descending scale)</label>
+              <input type="text" id="f-avaroha" class="input-field" placeholder="S' N D P M# G R S" />
+            </div>
+            <div class="field-group full-width">
+              <label>Pakad (characteristic phrase)</label>
+              <input type="text" id="f-pakad" class="input-field" placeholder="N R G M# D N S'" />
+            </div>
+            <div class="field-group full-width">
+              <label>Forbidden Notes (comma-separated)</label>
+              <input type="text" id="f-forbidden" class="input-field" placeholder="m, r, g" />
+            </div>
+            <div class="field-group full-width">
+              <label>Gamaka Notes (notes that need ornamentation, comma-separated)</label>
+              <input type="text" id="f-gamaka" class="input-field" placeholder="G, N" />
+            </div>
+            <div class="field-group full-width">
+              <label>Characteristic Phrases (one per line)</label>
+              <textarea id="f-phrases" class="input-field" rows="3" placeholder="N R G M# D&#10;G M# D N S'"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chroma Profile -->
+        <div id="mtab-chroma" class="modal-tab-panel">
+          <p class="helper-text">Set the expected prominence (0&#8211;1) of each pitch class when the raga is sung with Sa = C. Notes absent from the raga should be 0.</p>
+          <div class="chroma-grid" id="chromaGrid">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Pitch Parameters -->
+        <div id="mtab-params" class="modal-tab-panel">
+          <p class="helper-text">Define the expected acoustic ranges for this raga. These are used for parameter-based identification.</p>
+          <div id="pitchParamsEditor" class="pitch-params-editor">
+            <!-- Populated by JS -->
+          </div>
+          <button class="btn btn-outline btn-sm" id="addParamBtn">+ Add Parameter</button>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <div id="modalError" class="error-msg hidden"></div>
+        <button class="btn btn-ghost" id="modalCancelBtn">Cancel</button>
+        <button class="btn btn-primary" id="modalSaveBtn">Save Raga</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Key Modal -->
+  <div id="changeKeyModal" class="modal-overlay hidden">
+    <div class="modal-box modal-box-sm">
+      <div class="modal-header">
+        <h3>Change Admin Key</h3>
+        <button class="modal-close" id="ckModalClose">&#10005;</button>
+      </div>
+      <div class="modal-body">
+        <div class="field-group">
+          <label>New Admin Key (min 8 characters)</label>
+          <input type="password" id="newKeyInput" class="input-field" />
+        </div>
+        <div class="field-group">
+          <label>Confirm New Key</label>
+          <input type="password" id="confirmKeyInput" class="input-field" />
+        </div>
+        <div id="ckError" class="error-msg hidden"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="ckCancelBtn">Cancel</button>
+        <button class="btn btn-primary" id="ckSaveBtn">Update Key</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div id="deleteModal" class="modal-overlay hidden">
+    <div class="modal-box modal-box-sm">
+      <div class="modal-header">
+        <h3>Delete Raga</h3>
+        <button class="modal-close" id="delModalClose">&#10005;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete <strong id="deleteRagaName"></strong>? This cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="delCancelBtn">Cancel</button>
+        <button class="btn btn-danger" id="delConfirmBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SvarAI — Raga Tutor &amp; Pitch Coach</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">&#127925;</span>
+        <span class="logo-text">SvarAI</span>
+        <span class="logo-tagline">Raga Tutor &amp; Pitch Coach</span>
+      </div>
+      <nav class="header-nav">
+        <a href="/" class="nav-link active">Practice</a>
+        <a href="/admin" class="nav-link">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-container">
+
+    <!-- Upload / Record Panel -->
+    <section class="card upload-card">
+      <h2 class="card-title">Submit Your Performance</h2>
+
+      <div class="field-group">
+        <label for="targetRaga">Which raga are you practising? <span class="optional">(optional — leave blank to auto-identify)</span></label>
+        <select id="targetRaga" class="input-field">
+          <option value="">&#8212; Identify automatically &#8212;</option>
+        </select>
+      </div>
+
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="upload">Upload File</button>
+        <button class="tab-btn" data-tab="record">Record Live</button>
+      </div>
+
+      <div id="tab-upload" class="tab-panel active">
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-icon">&#127908;</div>
+          <p>Drag &amp; drop your audio file here<br /><small>WAV &middot; MP3 &middot; OGG &middot; FLAC &middot; M4A</small></p>
+          <button class="btn btn-outline" id="browseBtn">Browse Files</button>
+          <input type="file" id="fileInput" accept=".wav,.mp3,.ogg,.flac,.m4a" hidden />
+        </div>
+        <div id="fileInfo" class="file-info hidden"></div>
+      </div>
+
+      <div id="tab-record" class="tab-panel">
+        <canvas id="waveCanvas" class="wave-canvas"></canvas>
+        <div class="record-controls">
+          <button class="btn btn-record" id="recordBtn">&#9210; Start Recording</button>
+          <span id="recTimer" class="rec-timer">00:00</span>
+        </div>
+        <div id="recAudioPreview" class="hidden">
+          <audio id="recAudioEl" controls></audio>
+        </div>
+      </div>
+
+      <div class="ai-toggle-row">
+        <label class="toggle-label">
+          <input type="checkbox" id="aiToggle" checked />
+          <span class="toggle-switch"></span>
+          Get AI coaching feedback from SvarAI Guru
+        </label>
+      </div>
+
+      <button class="btn btn-primary btn-full" id="analyzeBtn" disabled>Analyse Performance</button>
+      <div id="analysisStatus" class="status-bar hidden"></div>
+    </section>
+
+    <!-- Results Panel -->
+    <section id="resultsSection" class="hidden">
+
+      <!-- Identification result -->
+      <div class="card result-header-card">
+        <div class="result-raga-block">
+          <div class="result-label">Identified Raga</div>
+          <div class="result-raga-name" id="resultRagaName">&#8212;</div>
+          <div class="result-confidence" id="resultConfidence"></div>
+        </div>
+        <div id="targetMatchBanner" class="target-match-banner hidden"></div>
+      </div>
+
+      <!-- AI Tutor Card -->
+      <div class="card tutor-card" id="tutorCard">
+        <div class="tutor-header">
+          <span class="tutor-icon">&#129489;&#8205;&#127979;</span>
+          <div>
+            <h3 class="tutor-title">AI Guru Feedback</h3>
+            <p class="tutor-raga-label" id="tutorRagaLabel"></p>
+          </div>
+          <div class="tutor-score-ring">
+            <svg viewBox="0 0 36 36" class="score-ring-svg">
+              <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path class="ring-fill" id="ringFill" stroke-dasharray="0, 100"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <span class="ring-value" id="ringValue">0</span>
+          </div>
+        </div>
+
+        <p class="tutor-assessment" id="tutorAssessment"></p>
+
+        <div id="ragaContextBox" class="raga-context-box hidden">
+          <p id="ragaContextText"></p>
+        </div>
+
+        <div id="positiveSection" class="feedback-section hidden">
+          <h4 class="section-title positive">&#10003; What You Did Well</h4>
+          <ul id="positiveList" class="feedback-list positive-list"></ul>
+        </div>
+
+        <div id="deviationsSection" class="feedback-section hidden">
+          <h4 class="section-title warning">&#9888; Areas to Improve</h4>
+          <div id="deviationsList" class="deviations-list"></div>
+        </div>
+
+        <div id="tipsSection" class="feedback-section hidden">
+          <h4 class="section-title tips">&#127919; Practice Exercises</h4>
+          <ol id="tipsList" class="tips-list"></ol>
+        </div>
+      </div>
+
+      <!-- Raga Rankings -->
+      <div class="card">
+        <h3 class="card-title">Parameter Match Rankings</h3>
+        <p class="card-subtitle">Similarity to each raga&#8217;s acoustic parameter profile</p>
+        <div id="rankingsList" class="rankings-list"></div>
+      </div>
+
+      <!-- Per-parameter breakdown -->
+      <div class="card" id="paramCard">
+        <h3 class="card-title">Parameter Breakdown &#8212; <span id="paramCardRagaName"></span></h3>
+        <div id="paramBreakdown" class="param-grid"></div>
+      </div>
+
+      <!-- Acoustic features table -->
+      <div class="card">
+        <h3 class="card-title">Raw Acoustic Features</h3>
+        <div id="featuresGrid" class="features-grid"></div>
+      </div>
+
+    </section>
+  </main>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

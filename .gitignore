@@ -42,6 +42,12 @@ desktop.ini
 *.swp
 *.swo
 
+# ── Secrets and credentials ───────────────────────────────────────────────────
+.env
+config/firebase-service-account.json
+config/firebase-*.json
+config/admin.json
+
 # ── Logs and temp files ───────────────────────────────────────────────────────
 *.log
 *.tmp
