@@ -2,151 +2,578 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SvarAI — Raga Tutor &amp; Pitch Coach</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#d97706" />
+  <meta name="description" content="SvarAI — Explainable AI tutor for Indian classical music. Raga identification, pitch coaching, and practice feedback." />
+  <title>SvarAI — AI Tutor for Indian Classical Music</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="/static/css/style.css" />
 </head>
 <body>
+
+  <!-- ── Top Header ──────────────────────────────────────────────────────── -->
   <header class="site-header">
     <div class="header-inner">
       <div class="logo">
-        <span class="logo-icon">&#127925;</span>
-        <span class="logo-text">SvarAI</span>
-        <span class="logo-tagline">Raga Tutor &amp; Pitch Coach</span>
+        <span class="logo-icon">🎵</span>
+        <div>
+          <span class="logo-text">SvarAI</span>
+          <span class="logo-tagline" id="pageSubtitle">AI Tutor for Indian Classical Music</span>
+        </div>
       </div>
-      <nav class="header-nav">
-        <a href="/" class="nav-link active">Practice</a>
-        <a href="/admin" class="nav-link">Admin</a>
-      </nav>
+      <a href="/admin" class="nav-link admin-link">Admin</a>
     </div>
   </header>
 
-  <main class="main-container">
+  <!-- ════════════════════════════════════════════════════════════════════════
+       PAGE: HOME
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <div id="page-home" class="page active">
 
-    <!-- Upload / Record Panel -->
-    <section class="card upload-card">
-      <h2 class="card-title">Submit Your Performance</h2>
+    <!-- Hero -->
+    <div class="hero-section">
+      <!-- Decorative circles -->
+      <div class="hero-circle hero-circle-1"></div>
+      <div class="hero-circle hero-circle-2"></div>
+      <div class="hero-circle hero-circle-3"></div>
+      <!-- Ambient blurs -->
+      <div class="hero-blur hero-blur-right"></div>
+      <div class="hero-blur hero-blur-left"></div>
 
-      <div class="field-group">
-        <label for="targetRaga">Which raga are you practising? <span class="optional">(optional — leave blank to auto-identify)</span></label>
-        <select id="targetRaga" class="input-field">
-          <option value="">&#8212; Identify automatically &#8212;</option>
-        </select>
+      <!-- Floating svara names -->
+      <div class="svara-decorations" aria-hidden="true">
+        <span class="svara" style="top:15%;left:8%;transform:rotate(-10deg)">Sa</span>
+        <span class="svara" style="top:27%;left:22%;transform:rotate(6deg)">Re</span>
+        <span class="svara" style="top:55%;left:5%;transform:rotate(-14deg)">Ga</span>
+        <span class="svara" style="top:18%;left:72%;transform:rotate(12deg)">Ma</span>
+        <span class="svara" style="top:42%;left:85%;transform:rotate(-8deg)">Pa</span>
+        <span class="svara" style="top:68%;left:78%;transform:rotate(10deg)">Dha</span>
+        <span class="svara" style="top:72%;left:18%;transform:rotate(-6deg)">Ni</span>
       </div>
 
-      <div class="tab-bar">
-        <button class="tab-btn active" data-tab="upload">Upload File</button>
-        <button class="tab-btn" data-tab="record">Record Live</button>
+      <!-- Tanpura silhouette -->
+      <div class="tanpura-silhouette animate-tanpura-float" aria-hidden="true">
+        <svg width="80" height="280" viewBox="0 0 120 400" fill="currentColor">
+          <rect x="55" y="0" width="10" height="380" rx="5"/>
+          <ellipse cx="60" cy="370" rx="50" ry="30"/>
+          <rect x="30" y="50" width="60" height="8" rx="4"/>
+          <rect x="30" y="100" width="60" height="8" rx="4"/>
+          <rect x="30" y="150" width="60" height="8" rx="4"/>
+          <line x1="40" y1="60" x2="40" y2="370" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>
+          <line x1="53" y1="60" x2="53" y2="370" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>
+          <line x1="67" y1="60" x2="67" y2="370" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>
+          <line x1="80" y1="60" x2="80" y2="370" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>
+        </svg>
       </div>
 
-      <div id="tab-upload" class="tab-panel active">
-        <div class="drop-zone" id="dropZone">
-          <div class="drop-icon">&#127908;</div>
-          <p>Drag &amp; drop your audio file here<br /><small>WAV &middot; MP3 &middot; OGG &middot; FLAC &middot; M4A</small></p>
-          <button class="btn btn-outline" id="browseBtn">Browse Files</button>
-          <input type="file" id="fileInput" accept=".wav,.mp3,.ogg,.flac,.m4a" hidden />
+      <div class="hero-content">
+        <!-- Badge -->
+        <div class="hero-badge">
+          <span class="hero-badge-dot animate-glow-pulse"></span>
+          Explainable AI for Indian Classical Music
         </div>
-        <div id="fileInfo" class="file-info hidden"></div>
-      </div>
 
-      <div id="tab-record" class="tab-panel">
-        <canvas id="waveCanvas" class="wave-canvas"></canvas>
-        <div class="record-controls">
-          <button class="btn btn-record" id="recordBtn">&#9210; Start Recording</button>
-          <span id="recTimer" class="rec-timer">00:00</span>
+        <h1 class="hero-title">
+          Master Your <span class="text-gradient hero-shimmer">Svaras</span><br/>
+          <span class="hero-subtitle-line">with Intelligent Practice</span>
+        </h1>
+
+        <p class="hero-description">
+          SvarAI listens to your vocal practice and provides tradition-aware, interpretable feedback
+          on pitch control, gamakas, and ornamentation.
+        </p>
+
+        <div class="hero-cta-wrap">
+          <div class="cta-pulse-ring"></div>
+          <button class="btn btn-primary btn-hero" id="heroStartBtn">
+            <span class="waveform-bars" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span>
+            </span>
+            Start Practice Session
+          </button>
         </div>
-        <div id="recAudioPreview" class="hidden">
-          <audio id="recAudioEl" controls></audio>
+      </div>
+
+      <!-- Wave divider -->
+      <div class="hero-wave">
+        <svg viewBox="0 0 1440 60" fill="none" preserveAspectRatio="none">
+          <path d="M0 30 Q 180 5, 360 30 T 720 30 T 1080 30 T 1440 30 V 60 H 0 Z" fill="hsl(20 18% 7%)" opacity="0.5"/>
+          <path d="M0 40 Q 180 20, 360 40 T 720 40 T 1080 40 T 1440 40 V 60 H 0 Z" fill="hsl(20 18% 7%)"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <section class="home-section">
+      <div class="ornamental-divider mb-3"><span class="ornamental-center">❋</span></div>
+      <h2 class="section-heading">How SvarAI Helps</h2>
+
+      <div class="features-row">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 Q6 4, 10 12 T18 12 T22 12"/></svg>
+          </div>
+          <h3 class="feature-title">Continuous Pitch Analysis</h3>
+          <p class="feature-desc">See your voice as flowing pitch contours, not discrete notes</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </div>
+          <h3 class="feature-title">Raga-Aware Feedback</h3>
+          <p class="feature-desc">Feedback adapts to the grammar of your chosen raga</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <h3 class="feature-title">Track Your Progress</h3>
+          <p class="feature-desc">Monitor improvement in stability, ornamentation &amp; confidence</p>
         </div>
       </div>
-
-      <div class="ai-toggle-row">
-        <label class="toggle-label">
-          <input type="checkbox" id="aiToggle" checked />
-          <span class="toggle-switch"></span>
-          Get AI coaching feedback from SvarAI Guru
-        </label>
-      </div>
-
-      <button class="btn btn-primary btn-full" id="analyzeBtn" disabled>Analyse Performance</button>
-      <div id="analysisStatus" class="status-bar hidden"></div>
     </section>
 
-    <!-- Results Panel -->
-    <section id="resultsSection" class="hidden">
-
-      <!-- Identification result -->
-      <div class="card result-header-card">
-        <div class="result-raga-block">
-          <div class="result-label">Identified Raga</div>
-          <div class="result-raga-name" id="resultRagaName">&#8212;</div>
-          <div class="result-confidence" id="resultConfidence"></div>
-        </div>
-        <div id="targetMatchBanner" class="target-match-banner hidden"></div>
+    <!-- Philosophy -->
+    <section class="home-section">
+      <div class="philosophy-card glass-warm">
+        <div class="philosophy-arch" aria-hidden="true"></div>
+        <h3 class="philosophy-title">Our Philosophy</h3>
+        <p class="philosophy-text">
+          Indian classical music is a continuous pitch system, not equal-tempered notes.
+          SvarAI doesn't "snap" to notes or give right/wrong scores. Instead, we show you
+          <strong>how</strong> you're singing—your pitch trajectories, oscillation patterns,
+          and settling behaviors—so you can develop authentic expression in your chosen tradition.
+        </p>
       </div>
-
-      <!-- AI Tutor Card -->
-      <div class="card tutor-card" id="tutorCard">
-        <div class="tutor-header">
-          <span class="tutor-icon">&#129489;&#8205;&#127979;</span>
-          <div>
-            <h3 class="tutor-title">AI Guru Feedback</h3>
-            <p class="tutor-raga-label" id="tutorRagaLabel"></p>
-          </div>
-          <div class="tutor-score-ring">
-            <svg viewBox="0 0 36 36" class="score-ring-svg">
-              <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <path class="ring-fill" id="ringFill" stroke-dasharray="0, 100"
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            </svg>
-            <span class="ring-value" id="ringValue">0</span>
-          </div>
-        </div>
-
-        <p class="tutor-assessment" id="tutorAssessment"></p>
-
-        <div id="ragaContextBox" class="raga-context-box hidden">
-          <p id="ragaContextText"></p>
-        </div>
-
-        <div id="positiveSection" class="feedback-section hidden">
-          <h4 class="section-title positive">&#10003; What You Did Well</h4>
-          <ul id="positiveList" class="feedback-list positive-list"></ul>
-        </div>
-
-        <div id="deviationsSection" class="feedback-section hidden">
-          <h4 class="section-title warning">&#9888; Areas to Improve</h4>
-          <div id="deviationsList" class="deviations-list"></div>
-        </div>
-
-        <div id="tipsSection" class="feedback-section hidden">
-          <h4 class="section-title tips">&#127919; Practice Exercises</h4>
-          <ol id="tipsList" class="tips-list"></ol>
-        </div>
-      </div>
-
-      <!-- Raga Rankings -->
-      <div class="card">
-        <h3 class="card-title">Parameter Match Rankings</h3>
-        <p class="card-subtitle">Similarity to each raga&#8217;s acoustic parameter profile</p>
-        <div id="rankingsList" class="rankings-list"></div>
-      </div>
-
-      <!-- Per-parameter breakdown -->
-      <div class="card" id="paramCard">
-        <h3 class="card-title">Parameter Breakdown &#8212; <span id="paramCardRagaName"></span></h3>
-        <div id="paramBreakdown" class="param-grid"></div>
-      </div>
-
-      <!-- Acoustic features table -->
-      <div class="card">
-        <h3 class="card-title">Raw Acoustic Features</h3>
-        <div id="featuresGrid" class="features-grid"></div>
-      </div>
-
     </section>
-  </main>
 
-  <script src="/static/js/app.js"></script>
+    <div class="page-bottom-pad"></div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       PAGE: PRACTICE
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <div id="page-practice" class="page">
+    <main class="main-container">
+
+      <!-- Upload / Record Panel -->
+      <section class="card upload-card">
+        <h2 class="card-title">Submit Your Performance</h2>
+
+        <div class="field-group">
+          <label for="targetRaga">Which raga are you practising? <span class="optional">(optional — leave blank to auto-identify)</span></label>
+          <select id="targetRaga" class="input-field">
+            <option value="">— Identify automatically —</option>
+          </select>
+        </div>
+
+        <div class="tab-bar">
+          <button class="tab-btn active" data-tab="upload">Upload File</button>
+          <button class="tab-btn" data-tab="record">Record Live</button>
+        </div>
+
+        <div id="tab-upload" class="tab-panel active">
+          <div class="drop-zone" id="dropZone">
+            <div class="drop-icon">🎙</div>
+            <p>Drag &amp; drop your audio file here<br/><small>WAV · MP3 · OGG · FLAC · M4A</small></p>
+            <button class="btn btn-outline" id="browseBtn">Browse Files</button>
+            <input type="file" id="fileInput" accept=".wav,.mp3,.ogg,.flac,.m4a" hidden />
+          </div>
+          <div id="fileInfo" class="file-info hidden"></div>
+        </div>
+
+        <div id="tab-record" class="tab-panel">
+          <canvas id="waveCanvas" class="wave-canvas"></canvas>
+          <div class="record-controls">
+            <button class="btn btn-record" id="recordBtn">⏺ Start Recording</button>
+            <span id="recTimer" class="rec-timer">00:00</span>
+          </div>
+          <div id="recAudioPreview" class="hidden">
+            <audio id="recAudioEl" controls></audio>
+          </div>
+        </div>
+
+        <div class="ai-toggle-row">
+          <label class="toggle-label">
+            <input type="checkbox" id="aiToggle" checked />
+            <span class="toggle-switch"></span>
+            Get AI coaching feedback from SvarAI Guru
+          </label>
+        </div>
+
+        <button class="btn btn-primary btn-full" id="analyzeBtn" disabled>Analyse Performance</button>
+        <div id="analysisStatus" class="status-bar hidden"></div>
+      </section>
+
+      <!-- Results Panel -->
+      <section id="resultsSection" class="hidden">
+
+        <!-- Identification result -->
+        <div class="card result-header-card">
+          <div class="result-raga-block">
+            <div class="result-label">Identified Raga</div>
+            <div class="result-raga-name" id="resultRagaName">—</div>
+            <div class="result-confidence" id="resultConfidence"></div>
+          </div>
+          <div id="targetMatchBanner" class="target-match-banner hidden"></div>
+        </div>
+
+        <!-- AI Tutor Card -->
+        <div class="card tutor-card" id="tutorCard">
+          <div class="tutor-header">
+            <span class="tutor-icon">🧑‍🏫</span>
+            <div>
+              <h3 class="tutor-title">AI Guru Feedback</h3>
+              <p class="tutor-raga-label" id="tutorRagaLabel"></p>
+            </div>
+            <div class="tutor-score-ring">
+              <svg viewBox="0 0 36 36" class="score-ring-svg">
+                <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                <path class="ring-fill" id="ringFill" stroke-dasharray="0, 100"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              </svg>
+              <span class="ring-value" id="ringValue">0</span>
+            </div>
+          </div>
+
+          <p class="tutor-assessment" id="tutorAssessment"></p>
+
+          <div id="ragaContextBox" class="raga-context-box hidden">
+            <p id="ragaContextText"></p>
+          </div>
+
+          <div id="positiveSection" class="feedback-section hidden">
+            <h4 class="section-title positive">✓ What You Did Well</h4>
+            <ul id="positiveList" class="feedback-list positive-list"></ul>
+          </div>
+
+          <div id="deviationsSection" class="feedback-section hidden">
+            <h4 class="section-title warning">⚠ Areas to Improve</h4>
+            <div id="deviationsList" class="deviations-list"></div>
+          </div>
+
+          <div id="tipsSection" class="feedback-section hidden">
+            <h4 class="section-title tips">🎯 Practice Exercises</h4>
+            <ol id="tipsList" class="tips-list"></ol>
+          </div>
+        </div>
+
+        <!-- Raga Rankings -->
+        <div class="card">
+          <h3 class="card-title">Parameter Match Rankings</h3>
+          <p class="card-subtitle">Similarity to each raga's acoustic parameter profile</p>
+          <div id="rankingsList" class="rankings-list"></div>
+        </div>
+
+        <!-- Per-parameter breakdown -->
+        <div class="card" id="paramCard">
+          <h3 class="card-title">Parameter Breakdown — <span id="paramCardRagaName"></span></h3>
+          <div id="paramBreakdown" class="param-grid"></div>
+        </div>
+
+        <!-- Acoustic features table -->
+        <div class="card">
+          <h3 class="card-title">Raw Acoustic Features</h3>
+          <div id="featuresGrid" class="features-grid"></div>
+        </div>
+
+      </section>
+    </main>
+    <div class="page-bottom-pad"></div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       PAGE: LEARN
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <div id="page-learn" class="page">
+    <div class="main-container">
+
+      <!-- Intro -->
+      <div class="learn-intro">
+        <div class="learn-icon-wrap">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        </div>
+        <div>
+          <h2 class="learn-title">Raga Guide</h2>
+          <p class="learn-desc">
+            Explore the rich world of Indian classical ragas. Each raga has its own personality,
+            time of day, emotional character, and distinctive melodic movements that make it unique.
+          </p>
+        </div>
+      </div>
+
+      <!-- Tradition tabs -->
+      <div class="tab-bar learn-tradition-tabs">
+        <button class="tab-btn active" data-tradition="carnatic" id="carnaticTab">🎵 Carnatic</button>
+        <button class="tab-btn" data-tradition="hindustani" id="hindustaniTab">🎶 Hindustani</button>
+      </div>
+
+      <!-- Search -->
+      <div class="learn-search-wrap">
+        <svg class="learn-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="ragaSearch" class="input-field learn-search-input" placeholder="Search by raga name or mood…" />
+      </div>
+
+      <!-- Raga cards list -->
+      <div id="ragaCardsList" class="raga-cards-list"></div>
+
+    </div>
+    <div class="page-bottom-pad"></div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       PAGE: PROGRESS
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <div id="page-progress" class="page">
+    <div class="main-container">
+
+      <div class="page-heading-center">
+        <h2 class="section-heading">Your Progress</h2>
+        <p class="section-subheading">Track your improvement over time</p>
+      </div>
+
+      <!-- Session counter from localStorage -->
+      <div class="progress-metrics-grid">
+        <div class="card progress-metric-card">
+          <div class="pm-icon pm-icon-green">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="pm-value" id="pmSessions">0</div>
+          <div class="pm-label">Sessions</div>
+        </div>
+        <div class="card progress-metric-card">
+          <div class="pm-icon pm-icon-saffron">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </div>
+          <div class="pm-value" id="pmRagas">0</div>
+          <div class="pm-label">Ragas Tried</div>
+        </div>
+        <div class="card progress-metric-card">
+          <div class="pm-icon pm-icon-gold">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <div class="pm-value" id="pmAvgScore">—</div>
+          <div class="pm-label">Avg Score</div>
+        </div>
+      </div>
+
+      <!-- Recent sessions -->
+      <div class="card" id="recentSessionsCard">
+        <h3 class="card-title">Recent Sessions</h3>
+        <div id="recentSessionsList" class="recent-sessions-list">
+          <div class="empty-state">
+            <p>No sessions yet — complete your first analysis on the Practice page!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Insights -->
+      <div class="card insights-card">
+        <h3 class="card-title">Practice Insights</h3>
+        <ul class="insights-list">
+          <li class="insight-item">
+            <span class="insight-dot insight-dot-green"></span>
+            Focus on sustaining each svara for at least 2–3 seconds to build stability.
+          </li>
+          <li class="insight-item">
+            <span class="insight-dot insight-dot-saffron"></span>
+            Practice slow gamakas (oscillations) before increasing speed—control beats speed.
+          </li>
+          <li class="insight-item">
+            <span class="insight-dot insight-dot-indigo"></span>
+            Regular short sessions (15 min) outperform infrequent long sessions for pitch memory.
+          </li>
+        </ul>
+      </div>
+
+    </div>
+    <div class="page-bottom-pad"></div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       PAGE: SETTINGS
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <div id="page-settings" class="page">
+    <div class="main-container settings-container">
+
+      <div class="page-heading-center">
+        <h2 class="section-heading">Settings</h2>
+        <p class="section-subheading">Customize your practice experience</p>
+      </div>
+
+      <!-- Raga Theme -->
+      <div class="card settings-card">
+        <div class="settings-card-header">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+          <h3 class="settings-card-title">Raga Theme</h3>
+        </div>
+        <div class="theme-grid">
+          <button class="theme-btn active" data-theme="default" id="theme-default">
+            <span class="theme-emoji">🌅</span>
+            <div>
+              <p class="theme-name">Default</p>
+              <p class="theme-desc">Warm saffron glow</p>
+            </div>
+          </button>
+          <button class="theme-btn" data-theme="yaman" id="theme-yaman">
+            <span class="theme-emoji">🌙</span>
+            <div>
+              <p class="theme-name">Yaman</p>
+              <p class="theme-desc">Midnight blue & gold</p>
+            </div>
+          </button>
+          <button class="theme-btn" data-theme="bhairav" id="theme-bhairav">
+            <span class="theme-emoji">🌄</span>
+            <div>
+              <p class="theme-name">Bhairav</p>
+              <p class="theme-desc">Dawn orange & crimson</p>
+            </div>
+          </button>
+          <button class="theme-btn" data-theme="kalyani" id="theme-kalyani">
+            <span class="theme-emoji">✨</span>
+            <div>
+              <p class="theme-name">Kalyani</p>
+              <p class="theme-desc">Pure warm gold</p>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Preferences -->
+      <div class="card settings-card">
+        <h3 class="settings-card-title" style="margin-bottom:1rem">Preferences</h3>
+        <div class="settings-rows">
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <div>
+                <p class="settings-row-label">AI Feedback by default</p>
+                <p class="settings-row-sub">Always enable AI coaching on analysis</p>
+              </div>
+            </div>
+            <label class="toggle-label">
+              <input type="checkbox" id="prefAiDefault" checked />
+              <span class="toggle-switch"></span>
+            </label>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              <div>
+                <p class="settings-row-label">Audio waveform</p>
+                <p class="settings-row-sub">Show live waveform while recording</p>
+              </div>
+            </div>
+            <label class="toggle-label">
+              <input type="checkbox" id="prefWaveform" checked />
+              <span class="toggle-switch"></span>
+            </label>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              <div>
+                <p class="settings-row-label">Save session history</p>
+                <p class="settings-row-sub">Store results locally for progress tracking</p>
+              </div>
+            </div>
+            <label class="toggle-label">
+              <input type="checkbox" id="prefSaveHistory" checked />
+              <span class="toggle-switch"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- About -->
+      <div class="card settings-card">
+        <h3 class="settings-card-title" style="margin-bottom:1rem">About SvarAI</h3>
+        <div class="about-text">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p>
+            SvarAI is an explainable AI tutor designed for Indian classical music
+            (Carnatic and Hindustani vocal traditions). We focus on continuous pitch
+            analysis, ornamentation patterns, and raga-aware feedback.
+          </p>
+        </div>
+        <div class="settings-divider" style="margin:1rem 0"></div>
+        <p class="about-version">Version 1.0.0 · Built with love for the tradition</p>
+        <div class="about-links">
+          <a href="mailto:hello@svarai.app" class="about-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            hello@svarai.app
+          </a>
+          <a href="/admin" class="about-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M21 12h-3M6 12H3M12 21v-3M12 6V3"/></svg>
+            Admin Panel
+          </a>
+        </div>
+      </div>
+
+      <!-- Clear data -->
+      <div class="card settings-card settings-danger-card">
+        <h3 class="settings-card-title settings-danger-title">Data</h3>
+        <p class="settings-row-sub" style="margin-bottom:.85rem">Clear all locally saved session history and preferences.</p>
+        <button class="btn btn-danger btn-sm" id="clearDataBtn">Clear All Data</button>
+      </div>
+
+    </div>
+    <div class="page-bottom-pad"></div>
+  </div>
+
+
+  <!-- ── Bottom Navigation ────────────────────────────────────────────────── -->
+  <nav class="bottom-nav" id="bottomNav" role="navigation" aria-label="Main navigation">
+    <div class="bottom-nav-inner">
+      <div class="nav-indicator" id="navIndicator"></div>
+      <div class="nav-items">
+        <button class="nav-item active" data-page="home" aria-label="Home">
+          <div class="nav-item-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <span class="nav-item-label">Home</span>
+          <div class="nav-item-dot"></div>
+        </button>
+        <button class="nav-item" data-page="practice" aria-label="Practice">
+          <div class="nav-item-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </div>
+          <span class="nav-item-label">Practice</span>
+          <div class="nav-item-dot"></div>
+        </button>
+        <button class="nav-item" data-page="learn" aria-label="Learn">
+          <div class="nav-item-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <span class="nav-item-label">Learn</span>
+          <div class="nav-item-dot"></div>
+        </button>
+        <button class="nav-item" data-page="progress" aria-label="Progress">
+          <div class="nav-item-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <span class="nav-item-label">Progress</span>
+          <div class="nav-item-dot"></div>
+        </button>
+        <button class="nav-item" data-page="settings" aria-label="Settings">
+          <div class="nav-item-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M21 12h-3M6 12H3M12 21v-3M12 6V3"/></svg>
+          </div>
+          <span class="nav-item-label">Settings</span>
+          <div class="nav-item-dot"></div>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <script src="/static/js/raga-data.js"></script>
+  <script src="/static/js/main.js"></script>
 </body>
 </html>
