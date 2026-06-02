@@ -235,12 +235,54 @@ function stopRecording() {
   btn.classList.remove('recording');
 }
 
-function finaliseRecording() {
-  recordedBlob = new Blob(recChunks, { type: 'audio/webm' });
+async function finaliseRecording() {
+  const webmBlob = new Blob(recChunks, { type: 'audio/webm' });
+  try {
+    const arrayBuf = await webmBlob.arrayBuffer();
+    const decodeCtx = new AudioContext();
+    const audioBuf = await decodeCtx.decodeAudioData(arrayBuf);
+    await decodeCtx.close();
+    recordedBlob = audioBufferToWav(audioBuf);
+  } catch {
+    recordedBlob = webmBlob;
+  }
   const url = URL.createObjectURL(recordedBlob);
   document.getElementById('recAudioEl').src = url;
   document.getElementById('recAudioPreview').classList.remove('hidden');
   refreshAnalyzeBtn();
+}
+
+function audioBufferToWav(buffer) {
+  const numCh = buffer.numberOfChannels;
+  const sr = buffer.sampleRate;
+  const numSamples = buffer.length;
+  const bytesPerSample = 2;
+  const dataLen = numCh * numSamples * bytesPerSample;
+  const ab = new ArrayBuffer(44 + dataLen);
+  const view = new DataView(ab);
+  const writeStr = (off, s) => { for (let i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i)); };
+  writeStr(0, 'RIFF');
+  view.setUint32(4, 36 + dataLen, true);
+  writeStr(8, 'WAVE');
+  writeStr(12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, numCh, true);
+  view.setUint32(24, sr, true);
+  view.setUint32(28, sr * numCh * bytesPerSample, true);
+  view.setUint16(32, numCh * bytesPerSample, true);
+  view.setUint16(34, 16, true);
+  writeStr(36, 'data');
+  view.setUint32(40, dataLen, true);
+  let off = 44;
+  for (let i = 0; i < numSamples; i++) {
+    for (let ch = 0; ch < numCh; ch++) {
+      const s = Math.max(-1, Math.min(1, buffer.getChannelData(ch)[i]));
+      view.setInt16(off, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+      off += 2;
+    }
+  }
+  return new Blob([ab], { type: 'audio/wav' });
 }
 
 function drawWaveform() {
@@ -288,7 +330,7 @@ async function runAnalysis() {
   if (activeTab === 'upload') {
     formData.append('file', selectedFile);
   } else {
-    formData.append('file', recordedBlob, 'recording.webm');
+    formData.append('file', recordedBlob, 'recording.wav');
   }
   if (targetRaga) formData.append('target_raga', targetRaga);
   formData.append('include_ai_feedback', aiToggle ? 'true' : 'false');
